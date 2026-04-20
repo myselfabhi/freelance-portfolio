@@ -7,9 +7,8 @@
   --color-accent-purple: #8B5CF6;
   --color-accent-blue: #3B82F6;
   --color-accent-cyan: #06B6D4;
-  
+
   --font-inter: var(--font-inter);
-  --font-satoshi: var(--font-satoshi);
 }
 
 :root {
@@ -23,60 +22,79 @@ body {
   overflow-x: hidden;
 }
 
-/* Glassmorphism */
+/* ─────────────────────────────────────────────
+   Glassmorphism utility
+───────────────────────────────────────────── */
 .glass {
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Noise Texture with Animation */
+/* ─────────────────────────────────────────────
+   Noise texture — inline SVG, no external deps
+───────────────────────────────────────────── */
 .noise-overlay {
   position: fixed;
-  top: -100%;
-  left: -100%;
-  right: -100%;
-  bottom: -100%;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200%;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.05;
-  background-image: url('https://grainy-gradients.vercel.app/noise.svg');
-  animation: noise-move 0.2s steps(10) infinite;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: noise-move 0.25s steps(8) infinite;
 }
 
 @keyframes noise-move {
-  0% { transform: translate(0, 0); }
-  10% { transform: translate(-5%, -5%); }
-  20% { transform: translate(-10%, 5%); }
-  30% { transform: translate(5%, -10%); }
-  40% { transform: translate(-5%, 15%); }
-  50% { transform: translate(-10%, 5%); }
-  60% { transform: translate(15%, 0); }
-  70% { transform: translate(0, 10%); }
-  80% { transform: translate(-15%, 0); }
-  90% { transform: translate(10%, 5%); }
-  100% { transform: translate(5%, 0); }
+  0%   { transform: translate(0, 0); }
+  12%  { transform: translate(-4%, -4%); }
+  25%  { transform: translate(-8%,  4%); }
+  37%  { transform: translate( 4%, -8%); }
+  50%  { transform: translate(-4%, 12%); }
+  62%  { transform: translate(-8%,  4%); }
+  75%  { transform: translate(12%,  0%); }
+  87%  { transform: translate( 0%,  8%); }
+  100% { transform: translate( 4%,  0%); }
 }
 
-/* Gradient Text */
+/* ─────────────────────────────────────────────
+   Marquee
+───────────────────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 38s linear infinite;
+}
+
+/* ─────────────────────────────────────────────
+   Hero scroll indicator pulse
+───────────────────────────────────────────── */
+@keyframes scrollPulse {
+  0%, 100% { opacity: 1; transform: scaleY(1); }
+  50%      { opacity: 0.3; transform: scaleY(0.6); }
+}
+
+/* ─────────────────────────────────────────────
+   Gradient text utility
+───────────────────────────────────────────── */
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-accent-purple via-accent-blue to-accent-cyan;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, #8B5CF6, #3B82F6, #06B6D4);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: #050505;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #222;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #333;
-}
+/* ─────────────────────────────────────────────
+   Custom scrollbar
+───────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 3px; }
+::-webkit-scrollbar-track { background: #050505; }
+::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #2a2a2a; }

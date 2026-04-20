@@ -2,108 +2,200 @@
 
 import React, { useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Code2, Palette, Zap, Globe } from 'lucide-react'
+import { Code2, Palette, Zap, Globe, ArrowUpRight } from 'lucide-react'
 
 const services = [
   {
-    title: "Product Development",
-    description: "End-to-end full-stack development. From architecture and design to scalable, secure, and production-ready code.",
-    icon: <Globe className="w-12 h-12 text-accent-purple" />,
-    color: "rgba(139, 92, 246, 0.15)"
+    title: "MVP & Product Builds",
+    description: "Your idea → a production-ready product in 4–12 weeks. Full-stack, scalable architecture, designed to get you to paying customers fast.",
+    price: "from $8k",
+    icon: <Globe className="w-10 h-10" />,
+    accent: "#8B5CF6",
+    shadow: "rgba(139,92,246,0.4)",
   },
   {
-    title: "UI to Code",
-    description: "Translating pixel-perfect designs into performant, clean, and accessible frontend code with advanced animations.",
-    icon: <Palette className="w-12 h-12 text-accent-blue" />,
-    color: "rgba(59, 130, 246, 0.15)"
+    title: "Design → Code",
+    description: "Figma to pixel-perfect, accessible, butter-smooth frontends. Next.js, Tailwind, Framer Motion. Your brand, engineered to convert.",
+    price: "from $2.5k",
+    icon: <Palette className="w-10 h-10" />,
+    accent: "#3B82F6",
+    shadow: "rgba(59,130,246,0.4)",
   },
   {
-    title: "Performance Optimization",
-    description: "Ensuring your applications load instantly and run at 60 FPS by eliminating bottlenecks and leveraging modern caching.",
-    icon: <Zap className="w-12 h-12 text-accent-cyan" />,
-    color: "rgba(6, 182, 212, 0.15)"
+    title: "Performance Rescue",
+    description: "Slow app costing you users? I audit, rewrite the bottlenecks, and ship a site that loads in under a second and runs at 60 FPS.",
+    price: "from $3k",
+    icon: <Zap className="w-10 h-10" />,
+    accent: "#06B6D4",
+    shadow: "rgba(6,182,212,0.4)",
   },
   {
-    title: "Real-time Systems",
-    description: "Building low-latency architectures for dashboards, auctions, and collaborative platforms using WebSockets and Redis.",
-    icon: <Code2 className="w-12 h-12 text-accent-purple" />,
-    color: "rgba(139, 92, 246, 0.15)"
-  }
+    title: "Real-time & AI Systems",
+    description: "Auctions, dashboards, AI-powered tools, collaborative apps — built on WebSockets, Redis, and LLMs. Sub-100ms, battle-tested.",
+    price: "from $10k",
+    icon: <Code2 className="w-10 h-10" />,
+    accent: "#8B5CF6",
+    shadow: "rgba(139,92,246,0.4)",
+  },
 ]
 
-export default function Services() {
-  const containerRef = useRef<HTMLDivElement>(null)
+interface TiltCardProps {
+  service: typeof services[0]
+  index: number
+}
+
+function TiltCard({ service, index }: TiltCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null)
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const cards = document.querySelectorAll('.service-card')
-    cards.forEach((card) => {
-      const rect = card.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
-      ;(card as HTMLElement).style.setProperty('--mouse-x', `${x}px`)
-      ;(card as HTMLElement).style.setProperty('--mouse-y', `${y}px`)
-    })
+    const card = cardRef.current
+    if (!card) return
+    const rect = card.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const cx = rect.width / 2
+    const cy = rect.height / 2
+    const tiltX = ((y - cy) / cy) * -10
+    const tiltY = ((x - cx) / cx) * 10
+    card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`
+    card.style.setProperty('--mouse-x', `${x}px`)
+    card.style.setProperty('--mouse-y', `${y}px`)
+  }
+
+  const handleMouseLeave = () => {
+    const card = cardRef.current
+    if (!card) return
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)'
   }
 
   return (
-    <section 
-      id="services"
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      className="relative w-full py-48 bg-[#050505] px-6 lg:px-20 overflow-hidden"
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true }}
+      className="h-full"
     >
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-32">
-          <motion.div 
-            initial={{ width: 0 }}
-            whileInView={{ width: "100px" }}
-            transition={{ duration: 1, ease: "circOut" }}
-            className="h-[1px] bg-accent-purple mb-8"
-          />
-          <motion.span 
-            className="text-sm font-bold tracking-[0.6em] uppercase text-accent-purple mb-6 block"
-          >
-            Capabilities
-          </motion.span>
-          <h2 className="text-7xl md:text-[10rem] font-black tracking-tighter leading-[0.85]">
-            Engineering <br />
-            <span className="text-foreground/10 italic">Solutions.</span>
-          </h2>
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="relative h-[480px] glass rounded-[2.5rem] p-10 md:p-12 border border-white/[0.06] overflow-hidden flex flex-col justify-between group cursor-default"
+        style={{ transition: 'transform 0.15s ease' }}
+      >
+        {/* Spotlight glow following mouse */}
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-[2.5rem]"
+          style={{
+            background: `radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${service.accent}18, transparent 60%)`,
+          }}
+        />
+
+        {/* Top-right corner glow */}
+        <div
+          className="absolute -top-20 -right-20 w-48 h-48 rounded-full blur-[80px] opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none"
+          style={{ background: service.accent }}
+        />
+
+        {/* Ghost index */}
+        <div
+          className="absolute bottom-4 right-6 text-[7rem] font-black italic leading-none pointer-events-none select-none opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500"
+          style={{ color: service.accent }}
+        >
+          0{index + 1}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: index * 0.1, ease: "circOut" }}
-              className="service-card group relative h-[500px] glass rounded-[3rem] p-12 md:p-16 border border-white/5 transition-all duration-700 overflow-hidden flex flex-col justify-between"
-            >
-              {/* Spotlight Effect */}
-              <div 
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-                style={{ 
-                  background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), ${service.color}, transparent 60%)` 
-                }}
-              />
-              
-              <div className="relative z-10 flex flex-col items-start gap-10 h-full">
-                <div className="p-6 glass rounded-[2rem] group-hover:bg-white group-hover:text-black transition-all duration-700 shadow-xl border-white/10 group-hover:scale-110 group-hover:-rotate-6">
-                  {service.icon}
-                </div>
-                
-                <div>
-                    <h3 className="text-4xl md:text-5xl font-black mb-8 tracking-tighter group-hover:translate-x-4 transition-transform duration-700 italic">{service.title}</h3>
-                    <p className="text-xl md:text-2xl text-foreground/40 leading-relaxed font-medium group-hover:text-foreground/80 transition-colors duration-700">
-                        {service.description}
-                    </p>
-                </div>
-              </div>
+        {/* Icon */}
+        <div
+          className="w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6"
+          style={{ background: `${service.accent}18`, color: service.accent }}
+        >
+          {service.icon}
+        </div>
 
-              {/* Decorative Index */}
-              <div className="absolute top-10 right-10 text-white/5 font-black text-6xl group-hover:text-accent-purple/20 transition-colors duration-700 italic">0{index + 1}</div>
-            </motion.div>
+        {/* Content */}
+        <div className="relative z-10">
+          <div className="flex items-start justify-between mb-4">
+            <h3 className="text-3xl md:text-4xl font-black tracking-tighter italic leading-tight">
+              {service.title}
+            </h3>
+            <ArrowUpRight
+              className="w-5 h-5 shrink-0 mt-1.5 ml-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-400"
+              style={{ color: service.accent }}
+            />
+          </div>
+          <p className="text-base md:text-lg text-foreground/40 leading-relaxed font-medium group-hover:text-foreground/70 transition-colors duration-500 mb-6">
+            {service.description}
+          </p>
+          {/* Price pill */}
+          <span
+            className="inline-flex items-center px-4 py-1.5 rounded-full text-[11px] font-black tracking-[0.3em] uppercase"
+            style={{
+              background: `${service.accent}15`,
+              color: service.accent,
+              border: `1px solid ${service.accent}30`,
+            }}
+          >
+            {service.price}
+          </span>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+export default function Services() {
+  return (
+    <section
+      id="services"
+      className="relative w-full py-48 bg-[#050505] px-6 lg:px-20 overflow-hidden"
+    >
+      {/* Background texture */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_50%,rgba(139,92,246,0.04),transparent)] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Header */}
+        <div className="mb-24">
+          <motion.div
+            initial={{ width: 0 }}
+            whileInView={{ width: '100px' }}
+            transition={{ duration: 1, ease: 'circOut' }}
+            viewport={{ once: true }}
+            className="h-[1px] bg-accent-purple mb-8"
+          />
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-sm font-bold tracking-[0.6em] uppercase text-accent-purple mb-6 block"
+          >
+            Services · Fixed Pricing
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            viewport={{ once: true }}
+            className="text-6xl md:text-[9rem] font-black tracking-tighter leading-[0.85]"
+          >
+            Pick your <br />
+            <span className="text-foreground/10 italic">mission.</span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="text-lg md:text-xl text-foreground/35 max-w-xl mt-8 font-medium leading-relaxed"
+          >
+            Transparent pricing, fixed scope, weekly shipping. No surprises — just a running product.
+          </motion.p>
+        </div>
+
+        {/* 2×2 card grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {services.map((service, index) => (
+            <TiltCard key={index} service={service} index={index} />
           ))}
         </div>
       </div>
