@@ -1,6 +1,10 @@
 /**
  * Central SEO constants. Edit these once; they propagate to metadata,
  * sitemap, robots, Open Graph, Twitter cards, and JSON-LD.
+ *
+ * Note: The OG image and apple-touch-icon are generated dynamically
+ * from `src/app/opengraph-image.tsx` and `src/app/apple-icon.tsx` via
+ * the Next.js file-convention metadata APIs — no static asset paths.
  */
 
 export const SITE = {
@@ -37,7 +41,11 @@ export const SITE = {
     "https://www.linkedin.com/in/abhinav-verma-2b2303203/",
     "https://instagram.com/_myselfabhi",
   ],
-  ogImage: "/og-image.png", // 1200x630 — create this asset if not present
+  availability: "Booking Q3 2026 · 2 Slots Left · Remote",
+  // Canonical route exposed by `src/app/opengraph-image.tsx` (file convention).
+  // Used for JSON-LD schema.org image fields. Layout/metadata don't reference
+  // this — they're auto-injected by Next.js from the file convention itself.
+  ogImage: "/opengraph-image",
 } as const
 
 export const absoluteUrl = (path = "/") =>

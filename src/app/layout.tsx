@@ -47,11 +47,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  icons: {
-    icon: [{ url: "/favicon.ico" }],
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-  },
+  // Icons are auto-detected from file conventions:
+  //   src/app/favicon.ico        → <link rel="icon">
+  //   src/app/apple-icon.tsx     → <link rel="apple-touch-icon">
   openGraph: {
     type: "website",
     locale: SITE.locale,
@@ -59,21 +57,14 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     title: SITE.title,
     description: SITE.description,
-    images: [
-      {
-        url: SITE.ogImage,
-        width: 1200,
-        height: 630,
-        alt: `${SITE.author} — ${SITE.jobTitle}`,
-      },
-    ],
+    // OG image is generated dynamically from app/opengraph-image.tsx
   },
   twitter: {
     card: "summary_large_image",
     title: SITE.title,
     description: SITE.description,
-    images: [SITE.ogImage],
     creator: SITE.twitter,
+    // Twitter image inherits from app/opengraph-image.tsx (no twitter-image.tsx defined)
   },
   robots: {
     index: true,

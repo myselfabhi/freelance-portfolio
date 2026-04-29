@@ -5,15 +5,15 @@ import { motion } from 'framer-motion'
 import MagneticButton from './MagneticButton'
 
 const BUDGETS = [
-  'Under $2k',
-  '$2k – $5k',
-  '$5k – $15k',
-  '$15k+',
+  '$2.5k – $5k',
+  '$5k – $10k',
+  '$10k – $25k',
+  '$25k+',
   'Not sure yet',
 ]
 
 export default function ContactForm() {
-  const [form, setForm] = useState({ name: '', email: '', budget: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', budget: '', message: '', _honey: '' })
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
 
   const update = (field: string, value: string) =>
@@ -21,6 +21,14 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Honeypot — bots that auto-fill every field get silently dropped.
+    if (form._honey) {
+      setStatus('sent')
+      setForm({ name: '', email: '', budget: '', message: '', _honey: '' })
+      return
+    }
+
     setStatus('sending')
 
     try {
@@ -37,13 +45,15 @@ export default function ContactForm() {
             budget: form.budget || 'Not specified',
             message: form.message,
             _subject: `New project inquiry from ${form.name}`,
+            _captcha: false,
+            _honey: form._honey,
           }),
         }
       )
 
       if (res.ok) {
         setStatus('sent')
-        setForm({ name: '', email: '', budget: '', message: '' })
+        setForm({ name: '', email: '', budget: '', message: '', _honey: '' })
       } else {
         setStatus('error')
       }
@@ -80,15 +90,33 @@ export default function ContactForm() {
   // ── Form ─────────────────────────────────────────────────────────
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-xl mx-auto w-full">
+      {/* Honeypot — hidden from users + assistive tech, catches naive bots */}
+      <input
+        type="text"
+        name="_honey"
+        tabIndex={-1}
+        autoComplete="off"
+        value={form._honey}
+        onChange={(e) => update('_honey', e.target.value)}
+        aria-hidden="true"
+        style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', opacity: 0 }}
+      />
+
       {/* Name + Email row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label className="text-[10px] font-black tracking-[0.3em] uppercase text-foreground/30 mb-2 block">
+          <label
+            htmlFor="contact-name"
+            className="text-[10px] font-black tracking-[0.3em] uppercase text-foreground/30 mb-2 block"
+          >
             Name *
           </label>
           <input
+            id="contact-name"
             required
             type="text"
+            name="name"
+            autoComplete="name"
             value={form.name}
             onChange={(e) => update('name', e.target.value)}
             placeholder="Your name"
@@ -96,12 +124,19 @@ export default function ContactForm() {
           />
         </div>
         <div>
-          <label className="text-[10px] font-black tracking-[0.3em] uppercase text-foreground/30 mb-2 block">
+          <label
+            htmlFor="contact-email"
+            className="text-[10px] font-black tracking-[0.3em] uppercase text-foreground/30 mb-2 block"
+          >
             Email *
           </label>
           <input
+            id="contact-email"
             required
             type="email"
+            name="email"
+            autoComplete="email"
+            inputMode="email"
             value={form.email}
             onChange={(e) => update('email', e.target.value)}
             placeholder="you@company.com"
@@ -112,35 +147,48 @@ export default function ContactForm() {
 
       {/* Budget selector */}
       <div>
-        <label className="text-[10px] font-black tracking-[0.3em] uppercase text-foreground/30 mb-2 block">
+        <span
+          id="contact-budget-label"
+          className="text-[10px] font-black tracking-[0.3em] uppercase text-foreground/30 mb-2 block"
+        >
           Project Budget
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {BUDGETS.map((b) => (
-            <button
-              key={b}
-              type="button"
-              onClick={() => update('budget', b)}
-              className={`px-4 py-2 rounded-full text-xs font-bold tracking-wider border transition-all duration-300 ${
-                form.budget === b
-                  ? 'bg-accent-purple/20 border-accent-purple/40 text-white'
-                  : 'bg-white/[0.02] border-white/[0.07] text-foreground/35 hover:border-white/15 hover:text-foreground/55'
-              }`}
-            >
-              {b}
-            </button>
-          ))}
+        </span>
+        <div role="radiogroup" aria-labelledby="contact-budget-label" className="flex flex-wrap gap-2">
+          {BUDGETS.map((b) => {
+            const selected = form.budget === b
+            return (
+              <button
+                key={b}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => update('budget', b)}
+                className={`px-4 py-2 rounded-full text-xs font-bold tracking-wider border transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-accent-purple/40 focus-visible:border-accent-purple/50 ${
+                  selected
+                    ? 'bg-accent-purple/20 border-accent-purple/40 text-white'
+                    : 'bg-white/[0.02] border-white/[0.07] text-foreground/35 hover:border-white/15 hover:text-foreground/55'
+                }`}
+              >
+                {b}
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* Message */}
       <div>
-        <label className="text-[10px] font-black tracking-[0.3em] uppercase text-foreground/30 mb-2 block">
+        <label
+          htmlFor="contact-message"
+          className="text-[10px] font-black tracking-[0.3em] uppercase text-foreground/30 mb-2 block"
+        >
           Message *
         </label>
         <textarea
+          id="contact-message"
           required
           rows={5}
+          name="message"
           value={form.message}
           onChange={(e) => update('message', e.target.value)}
           placeholder="Tell me about your project — goals, timeline, anything helpful..."
@@ -165,7 +213,7 @@ export default function ContactForm() {
       </div>
 
       {status === 'error' && (
-        <p className="text-red-400/80 text-sm text-center">
+        <p className="text-red-400/80 text-sm text-center" role="alert">
           Something went wrong. Try again or email me directly at{' '}
           <a href="mailto:myselfabhi.dev@gmail.com" className="underline">
             myselfabhi.dev@gmail.com

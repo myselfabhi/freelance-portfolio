@@ -8,6 +8,7 @@ import { Mail, ArrowUp } from 'lucide-react'
 import FooterCanvas from '@/components/FooterCanvas'
 import MagneticButton from '@/components/MagneticButton'
 import ContactForm from '@/components/ContactForm'
+import { SITE } from '@/lib/seo'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -119,7 +120,7 @@ export default function Footer() {
         >
           <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] animate-pulse" />
           <span className="text-[11px] font-black tracking-[0.38em] uppercase text-foreground/50">
-            Available · Q3 2026 · Remote
+            {SITE.availability}
           </span>
         </motion.div>
 

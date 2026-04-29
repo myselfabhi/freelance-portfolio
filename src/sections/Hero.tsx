@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import HeroCanvas from '@/components/HeroCanvas'
 import MagneticButton from '@/components/MagneticButton'
+import { SITE } from '@/lib/seo'
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -88,7 +89,7 @@ export default function Hero() {
           <div className="inline-flex items-center gap-2.5 glass px-5 py-2.5 rounded-full border-white/[0.07]">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)] animate-pulse shrink-0" />
             <span className="text-[11px] font-bold tracking-[0.35em] uppercase text-foreground/50">
-              Booking Q3 2026 · 2 Slots Left · Remote
+              {SITE.availability}
             </span>
           </div>
         </div>

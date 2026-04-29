@@ -36,7 +36,7 @@ export async function generateMetadata({
       siteName: SITE.name,
       images: [
         {
-          url: SITE.ogImage,
+          url: absoluteUrl(SITE.ogImage),
           width: 1200,
           height: 630,
           alt: project.title,
@@ -47,7 +47,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: `${title} · ${SITE.shortTitle}`,
       description,
-      images: [SITE.ogImage],
+      images: [absoluteUrl(SITE.ogImage)],
       creator: SITE.twitter,
     },
   }
